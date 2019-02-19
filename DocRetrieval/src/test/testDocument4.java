@@ -20,21 +20,19 @@ public class testDocument4 {
         // seting dokumen
         Document doc1 = new Document(1, "computer information retrieval.");
         Document doc2 = new Document(2, "computer organization and architecture");
-        ArrayList<Document> listOfDocument = new ArrayList<Document>();
-        listOfDocument.add(doc1);
-        listOfDocument.add(doc2);
-        ArrayList<Posting> list = new ArrayList<Posting>();
-
-        for (int i = 0; i < listOfDocument.size(); i++) {
-            String[] tempResult = listOfDocument.get(i).getListofTerm();
-            for (int j = 0; j < tempResult.length; j++) {
-                Posting tempPosting = new Posting(tempResult[j], listOfDocument.get(i));
-                list.add(tempPosting);
-            }
-        }
-        System.out.println("Ukuran list = " + list.size());
+        Document doc3 = new Document(3, "machine learning architecture");
+        
+        InvertedIndex index = new InvertedIndex();
+        
+        index.addNewDocument(doc1);
+        index.addNewDocument(doc2);
+        index.addNewDocument(doc3);
+        
+        ArrayList<Posting> list = index.getSortedPostingList();
+        System.out.println("Ukuran list = "+list.size());
         for (int i = 0; i < list.size(); i++) {
-            System.out.println(list.get(i).getTerm() + "," + list.get(i).getDocument().getId());
+            System.out.println(list.get(i).getTerm()+","+list.get(i).getDocument().getId());
         }
+        
     }
 }

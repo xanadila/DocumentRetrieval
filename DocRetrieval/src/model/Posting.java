@@ -54,6 +54,7 @@ public class Posting implements Comparable<Posting>{
         this.term = term;
     }
     
+    @Override
     public int compareTo(Posting o){
         throw new UnsupportedOperationException("Not supported yet.");
     }
