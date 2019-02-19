@@ -5,11 +5,13 @@
  */
 package model;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author admin
  */
-public class Posting {
+public class Posting implements Comparable<Posting>{
     private String term;
     private Document document;
     
@@ -52,4 +54,7 @@ public class Posting {
         this.term = term;
     }
     
+    public int compareTo(Posting o){
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }
