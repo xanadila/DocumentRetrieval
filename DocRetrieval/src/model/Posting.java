@@ -14,6 +14,7 @@ import java.util.ArrayList;
 public class Posting implements Comparable<Posting>{
     private String term;
     private Document document;
+    private int numberOfTerm = 1;
     
     
     public Posting(Document document) {
@@ -53,9 +54,24 @@ public class Posting implements Comparable<Posting>{
     public void setTerm(String term) {
         this.term = term;
     }
-    
+
     @Override
-    public int compareTo(Posting o){
-        throw new UnsupportedOperationException("Not supported yet.");
+    public int compareTo(Posting posting) {
+        return term.compareToIgnoreCase(posting.getTerm());
     }
+
+    /**
+     * @return the numberOfTerm
+     */
+    public int getNumberOfTerm() {
+        return numberOfTerm;
+    }
+
+    /**
+     * @param numberOfTerm the numberOfTerm to set
+     */
+    public void setNumberOfTerm(int numberOfTerm) {
+        this.numberOfTerm = numberOfTerm;
+    }
+    
 }

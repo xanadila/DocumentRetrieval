@@ -5,17 +5,23 @@
  */
 package model;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author admin
  */
-public class Term {
-    private String term;
-    private PostingList termList;
+public class Term implements Comparable<Term> {
 
-    public Term(String term, PostingList termList) {
+    private String term;
+    private ArrayList<Posting> postingList = new ArrayList<Posting>();
+
+    public Term(String term) {
         this.term = term;
-        this.termList = termList;
+    }
+
+    public int getNumberOfDocument() {
+        return postingList.size();
     }
 
     /**
@@ -33,17 +39,22 @@ public class Term {
     }
 
     /**
-     * @return the termList
+     * @return the postingList
      */
-    public PostingList getTermList() {
-        return termList;
+    public ArrayList<Posting> getPostingList() {
+        return postingList;
     }
 
     /**
-     * @param termList the termList to set
+     * @param postingList the postingList to set
      */
-    public void setTermList(PostingList termList) {
-        this.termList = termList;
+    public void setPostingList(ArrayList<Posting> postingList) {
+        this.postingList = postingList;
     }
-    
+
+    @Override
+    public int compareTo(Term o) {
+        return term.compareToIgnoreCase(o.getTerm());
+    }
+
 }
