@@ -11,21 +11,38 @@ import java.util.ArrayList;
  *
  * @author admin
  */
-public class Posting implements Comparable<Posting>{
+public class Posting implements Comparable<Posting> {
+
     private String term;
     private Document document;
-    private int numberOfTerm = 1;
-    
-    
+    private int numberOfTerm;
+    private double weight;
+
+    public Posting() {
+        numberOfTerm = 1;
+        setWeight(0);
+    }
+
     public Posting(Document document) {
         this.document = document;
+        numberOfTerm = 1;
+        setWeight(0);
     }
 
     public Posting(String term, Document document) {
         this.term = term;
         this.document = document;
+        numberOfTerm = 1;
+        setWeight(0);
     }
-    
+
+    public String getTerm() {
+        return term;
+    }
+
+    public void setTerm(String term) {
+        this.term = term;
+    }
 
     /**
      * @return the document
@@ -41,23 +58,16 @@ public class Posting implements Comparable<Posting>{
         this.document = document;
     }
 
-    /**
-     * @return the term
-     */
-    public String getTerm() {
-        return term;
-    }
-
-    /**
-     * @param term the term to set
-     */
-    public void setTerm(String term) {
-        this.term = term;
+    @Override
+    public int compareTo(Posting o) {
+        return this.term.compareTo(o.term);
     }
 
     @Override
-    public int compareTo(Posting posting) {
-        return term.compareToIgnoreCase(posting.getTerm());
+    public String toString() {
+        String string = this.term + " -> " + this.document.getId();
+
+        return string;
     }
 
     /**
@@ -73,5 +83,20 @@ public class Posting implements Comparable<Posting>{
     public void setNumberOfTerm(int numberOfTerm) {
         this.numberOfTerm = numberOfTerm;
     }
+
+    /**
+     * @return the weight
+     */
+    public double getWeight() {
+        return weight;
+    }
+
+    /**
+     * @param weight the weight to set
+     */
+    public void setWeight(double weight) {
+        this.weight = weight;
+    }   
     
+
 }

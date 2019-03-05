@@ -13,7 +13,7 @@ import java.util.StringTokenizer;
  *
  * @author puspaningtyas
  */
-public class Document {
+public class Document implements Comparable<Document> {
 
     private int id;
     private String content;
@@ -21,12 +21,12 @@ public class Document {
     public Document() {
     }
 
-    public Document(String content) {
+    public Document(int id, String content) {
+        this.id = id;
         this.content = content;
     }
 
-    public Document(int id, String content) {
-        this.id = id;
+    public Document(String content) {
         this.content = content;
     }
 
@@ -44,68 +44,68 @@ public class Document {
         this.content = content;
     }
 
-    /**
-     * @return the id
-     */
     public int getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
     public void setId(int id) {
         this.id = id;
     }
 
+    public String[] getListTerm() {
+        return null;
+    }
+
+    public static String[] toTerms(String content) {
+        return content.split(" ");
+    }
+
     public String[] getListofTerm() {
-        String value = this.getContent();
+        String value = this.getContent().toLowerCase();
         value = value.replaceAll("[.,?!]", "");
         return value.split(" ");
     }
 
-    public ArrayList<Posting> getListofPosting() {
-        // panggil fungsi getListOfTerm
-        String tempString[] = getListofTerm();
-        // buat objek ArrayList<Posting> result untuk menampung hasil
-        ArrayList<Posting> result = new ArrayList<Posting>();
-        // buat looping sebanyak listOfTerm
-        for (int i = 0; i < tempString.length; i++) {
-            // di dalam looping
-            // jika term pertama maka
+    public ArrayList<Posting> getListOfPosting() {
+        String[] terms = getListofTerm();
+
+        // menampung hasil
+        ArrayList<Posting> result = new ArrayList<>();
+
+        for (int i = 0; i < terms.length; i++) {
             if (i == 0) {
-                // buat object tempPosting
-                Posting temPosting = new Posting(tempString[0],this);
-                // set atribut document, gunakan this
-                // tambahkan ke ArrayList result
-                result.add(temPosting);
+
+                // untuk kata pertama
+                Posting tempPosting = new Posting(terms[i], this);
+                result.add(tempPosting);
             } else {
-                // lainnya
-                // sorting ArayList result
+
+                // urutkan result
                 Collections.sort(result);
-                // cek apakah term sudah ada
-                // gunakan fungsi search dengan luaran indeks obyek yang memenuhi
-                // buat object tempPosting           
-                Posting temPosting = new Posting(tempString[i],this);
-                int indexCari = Collections.binarySearch(result,temPosting);
-                // jika hasil cari kurang dari 0  (obyek tidak ada)
-                if (indexCari <0){
-                    // set atribut document, gunakan this
-                    // tambahkan ke ArrayList result
-                    result.add(temPosting);
-                } else{
-                // lainnya   (obyek ada)
-                    // ambil postingnya, 
-                    // tambahkan atribut numberOfTerm dengan 1
-                    // dgn fungsi get
-                    // int tempNumber = get(indekshasilCari).getNumberOfTerm()+1;
-                    int tempNumber = result.get(indexCari).getNumberOfTerm()+1;
-                    // atau get(indekshasilcari.setNumberOfTerm(tempNumber)
-                    result.get(indexCari).setNumberOfTerm(tempNumber);
+
+                Posting tempPosting = new Posting(terms[i], this);
+
+                // cari apakah term sudah ada di dalam arraylist result
+                int pos = Collections.binarySearch(result, tempPosting);
+                if (pos < 0) { // jika tidak ketemu
+
+                    result.add(tempPosting);
+
+                } else { // ika term sudah ada
+
+                    // tambahkan numberOfTerm
+                    int tempNumber = result.get(pos).getNumberOfTerm() + 1;
+                    result.get(pos).setNumberOfTerm(tempNumber);
                 }
             }
         }
-        return result;
-}
+        Collections.sort(result);
 
+        return result;
+    }
+
+    @Override
+    public int compareTo(Document o) {
+        return Integer.compare(this.id, o.id);
+    }
 }
