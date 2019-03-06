@@ -15,33 +15,20 @@ public class Posting implements Comparable<Posting> {
 
     private String term;
     private Document document;
-    private int numberOfTerm;
-    private double weight;
+    private int numberOfTerm = 1;
+    private double weight=0.0; // nilai TF-IDF
 
     public Posting() {
-        numberOfTerm = 1;
-        setWeight(0);
     }
 
+    
     public Posting(Document document) {
         this.document = document;
-        numberOfTerm = 1;
-        setWeight(0);
     }
 
     public Posting(String term, Document document) {
         this.term = term;
         this.document = document;
-        numberOfTerm = 1;
-        setWeight(0);
-    }
-
-    public String getTerm() {
-        return term;
-    }
-
-    public void setTerm(String term) {
-        this.term = term;
     }
 
     /**
@@ -58,16 +45,35 @@ public class Posting implements Comparable<Posting> {
         this.document = document;
     }
 
-    @Override
-    public int compareTo(Posting o) {
-        return this.term.compareTo(o.term);
+    /**
+     * @return the term
+     */
+    public String getTerm() {
+        return term;
+    }
+
+    /**
+     * @param term the term to set
+     */
+    public void setTerm(String term) {
+        this.term = term;
     }
 
     @Override
-    public String toString() {
-        String string = this.term + " -> " + this.document.getId();
-
-        return string;
+    public int compareTo(Posting posting) {
+        int result = 0;
+        result = term.compareToIgnoreCase(posting.getTerm());
+        if (result == 0) {
+            if(posting.getDocument()!=null){
+                result = getDocument().getId() - 
+                        posting.getDocument().getId();
+                return result;
+            } else{
+                return result;
+            }
+        } else {
+            return result;
+        }
     }
 
     /**
@@ -96,7 +102,6 @@ public class Posting implements Comparable<Posting> {
      */
     public void setWeight(double weight) {
         this.weight = weight;
-    }   
-    
+    }
 
 }
