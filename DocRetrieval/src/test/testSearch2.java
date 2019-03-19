@@ -39,7 +39,7 @@ public class testSearch2 {
             System.out.println("IdDokumen = " + doc.getDocument().getId());
         }
 
-        // searching
+        
         // searching
         System.out.println("query = " + query);
         ArrayList<SearchingResult> hasilCari2 = index.searchCosineSimilarity(query);
