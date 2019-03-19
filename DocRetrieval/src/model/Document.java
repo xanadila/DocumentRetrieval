@@ -13,7 +13,7 @@ import java.util.StringTokenizer;
  *
  * @author puspaningtyas
  */
-public class Document implements Comparable<Document> {
+public class Document implements Comparable<Document>{
 
     private int id;
     private String content;
@@ -72,14 +72,14 @@ public class Document implements Comparable<Document> {
         // panggil fungsi getListOfTerm
         String tempString[] = getListofTerm();
         // buat objek ArrayList<Posting> result untuk menampung hasil
-        ArrayList<Posting> result = new ArrayList<Posting>();
+        ArrayList<Posting> result = new ArrayList<>();
         // buat looping sebanyak listOfTerm
         for (int i = 0; i < tempString.length; i++) {
             // di dalam looping
             // jika term pertama maka
             if (i == 0) {
                 // buat object tempPosting
-                Posting temPosting = new Posting(tempString[0], this);
+                Posting temPosting = new Posting(tempString[0],this);
                 // set atribut document, gunakan this
                 // tambahkan ke ArrayList result
                 result.add(temPosting);
@@ -90,20 +90,20 @@ public class Document implements Comparable<Document> {
                 // cek apakah term sudah ada
                 // gunakan fungsi search dengan luaran indeks obyek yang memenuhi
                 // buat object tempPosting           
-                Posting temPosting = new Posting(tempString[i], this);
-                int indexCari = Collections.binarySearch(result, temPosting);
+                Posting temPosting = new Posting(tempString[i],this);
+                int indexCari = Collections.binarySearch(result,temPosting);
                 // jika hasil cari kurang dari 0  (obyek tidak ada)
-                if (indexCari < 0) {
+                if (indexCari <0){
                     // set atribut document, gunakan this
                     // tambahkan ke ArrayList result
                     result.add(temPosting);
-                } else {
-                    // lainnya   (obyek ada)
+                } else{
+                // lainnya   (obyek ada)
                     // ambil postingnya, 
                     // tambahkan atribut numberOfTerm dengan 1
                     // dgn fungsi get
                     // int tempNumber = get(indekshasilCari).getNumberOfTerm()+1;
-                    int tempNumber = result.get(indexCari).getNumberOfTerm() + 1;
+                    int tempNumber = result.get(indexCari).getNumberOfTerm()+1;
                     // atau get(indekshasilcari.setNumberOfTerm(tempNumber)
                     result.get(indexCari).setNumberOfTerm(tempNumber);
                 }
@@ -114,6 +114,6 @@ public class Document implements Comparable<Document> {
 
     @Override
     public int compareTo(Document doc) {
-        return id - doc.getId();
+        return id-doc.getId();
     }
 }
