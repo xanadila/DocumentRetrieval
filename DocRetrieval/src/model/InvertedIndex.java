@@ -19,8 +19,8 @@ import java.util.function.Consumer;
  */
 public class InvertedIndex {
 
-    private ArrayList<Document> listOfDocument = new ArrayList<Document>();
-    private ArrayList<Term> dictionary = new ArrayList<Term>();
+    private ArrayList<Document> listOfDocument = new ArrayList<>();
+    private ArrayList<Term> dictionary = new ArrayList<>();
 
     public InvertedIndex() {
     }
@@ -32,16 +32,15 @@ public class InvertedIndex {
     public ArrayList<Posting> getUnsortedPostingList() {
         // cek untuk term yang muncul lebih dari 1 kali
         // siapkan posting List
-        ArrayList<Posting> list = new ArrayList<Posting>();
+        ArrayList<Posting> list = new ArrayList<>();
         // buat node Posting utk listofdocument
         for (int i = 0; i < getListOfDocument().size(); i++) {
             // buat listOfTerm dari document ke -i
             String[] termResult = getListOfDocument().get(i).getListofTerm();
             // loop sebanyak term dari document ke i
-            for (int j = 0; j < termResult.length; j++) {
+            for (String termResult1 : termResult) {
                 // buat object tempPosting
-                Posting tempPosting = new Posting(termResult[j],
-                        getListOfDocument().get(i));
+                Posting tempPosting = new Posting(termResult1, getListOfDocument().get(i));
                 // cek kemunculan term
                 list.add(tempPosting);
             }
@@ -52,7 +51,7 @@ public class InvertedIndex {
     public ArrayList<Posting> getUnsortedPostingListWithTermNumber() {
         // cek untuk term yang muncul lebih dari 1 kali
         // siapkan posting List
-        ArrayList<Posting> list = new ArrayList<Posting>();
+        ArrayList<Posting> list = new ArrayList<>();
         // buat node Posting utk listofdocument
         for (int i = 0; i < getListOfDocument().size(); i++) {
             // buat listOfTerm dari document ke -i
@@ -71,7 +70,7 @@ public class InvertedIndex {
 
     public ArrayList<Posting> getSortedPostingList() {
         // siapkan posting List
-        ArrayList<Posting> list = new ArrayList<Posting>();
+        ArrayList<Posting> list = new ArrayList<>();
         // panggil list yang belum terurut
         list = this.getUnsortedPostingList();
         // urutkan
@@ -81,7 +80,7 @@ public class InvertedIndex {
 
     public ArrayList<Posting> getSortedPostingListWithTermNumber() {
         // siapkan posting List
-        ArrayList<Posting> list = new ArrayList<Posting>();
+        ArrayList<Posting> list = new ArrayList<>();
         // panggil list yang belum terurut
         list = this.getUnsortedPostingListWithTermNumber();
         // urutkan
@@ -99,7 +98,7 @@ public class InvertedIndex {
         // buat index/dictionary
 //        makeDictionary();
         String tempQuery[] = query.split(" ");
-        ArrayList<Posting> result = new ArrayList<Posting>();
+        ArrayList<Posting> result = new ArrayList<>();
         for (int i = 0; i < tempQuery.length; i++) {
             String string = tempQuery[i];
             if (i == 0) {
@@ -373,10 +372,11 @@ public class InvertedIndex {
      * Fungsi untuk menghitung TF-IDF dari sebuah dokumen
      *
      * @param idDocument
+     * @return
      */
     public ArrayList<Posting> makeTFIDF(int idDocument) {
         // buat posting list hasil
-        ArrayList<Posting> result = new ArrayList<Posting>();
+        ArrayList<Posting> result = new ArrayList<>();
         // buat document temporary, sesuai passing parameter
         Document temp = new Document(idDocument);
         // cek document temp, ada di dalam list document?
@@ -405,6 +405,21 @@ public class InvertedIndex {
         } else {
             // dokumen tidak ada
         }
+        return result;
+    }
+
+    public ArrayList<Posting> makeTFIDF(String query) {
+        Document doc = new Document();
+        doc.setContent(query);
+
+        ArrayList<Posting> result = doc.getListofPosting();
+        for (int i = 0; i < result.size(); i++) {
+            // weight = tf * idf
+            double weight = result.get(i).getNumberOfTerm() * getInverseDocumentFrequency(result.get(i).getTerm());
+
+            result.get(i).setWeight(weight);
+        }
+
         return result;
     }
 
@@ -478,7 +493,11 @@ public class InvertedIndex {
      * @return
      */
     public double getLengthOfPosting(ArrayList<Posting> posting) {
-        return 0;
+        double length = 0;
+        for (int i = 0; i < posting.size(); i++) {
+            length += posting.get(i).getWeight() * posting.get(i).getWeight();
+        }
+        return Math.sqrt(length);
     }
 
     /**
@@ -488,9 +507,11 @@ public class InvertedIndex {
      * @param posting1
      * @return
      */
-    public double getCosineSimilarity(ArrayList<Posting> posting,
-            ArrayList<Posting> posting1) {
-        return 0;
+    public double getCosineSimilarity(ArrayList<Posting> posting, ArrayList<Posting> posting1) {
+        double innerProduct = getInnerProduct(posting, posting1);
+        double length = getLengthOfPosting(posting) * getLengthOfPosting(posting1);
+        double cosineSimilarity = innerProduct / length;
+        return cosineSimilarity;
     }
 
     /**
@@ -500,7 +521,16 @@ public class InvertedIndex {
      * @return
      */
     public ArrayList<SearchingResult> searchTFIDF(String query) {
-        return null;
+        ArrayList<SearchingResult> searchingResults = new ArrayList<>();
+        ArrayList<Posting> queryTFIDF = makeTFIDF(query);
+        for (int i = 0; i < listOfDocument.size(); i++) {           
+            ArrayList<Posting> documentTFIDF = makeTFIDF(listOfDocument.get(i).getId());
+            double similarity = getInnerProduct(queryTFIDF, documentTFIDF);
+            searchingResults.add(new SearchingResult(similarity, listOfDocument.get(i)));
+        }
+        Collections.sort(searchingResults, Collections.reverseOrder());
+        return searchingResults;
+
     }
 
     /**
@@ -510,6 +540,14 @@ public class InvertedIndex {
      * @return
      */
     public ArrayList<SearchingResult> searchCosineSimilarity(String query) {
-        return null;
+        ArrayList<SearchingResult> searchingResults = new ArrayList<>();
+        ArrayList<Posting> queryTFIDF = makeTFIDF(query);
+        for (int i = 0; i < listOfDocument.size(); i++) {
+            ArrayList<Posting> documentTFIDF = makeTFIDF(listOfDocument.get(i).getId());
+            double similarity = getCosineSimilarity(queryTFIDF, documentTFIDF);
+            searchingResults.add(new SearchingResult(similarity, listOfDocument.get(i)));
+        }
+        Collections.sort(searchingResults, Collections.reverseOrder());
+        return searchingResults;
     }
 }
