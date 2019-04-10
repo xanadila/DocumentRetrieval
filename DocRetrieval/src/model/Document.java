@@ -5,6 +5,7 @@
  */
 package model;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.StringTokenizer;
@@ -115,5 +116,9 @@ public class Document implements Comparable<Document>{
     @Override
     public int compareTo(Document doc) {
         return id-doc.getId();
+    }
+    
+    public void readFile(int id,File file){
+        
     }
 }

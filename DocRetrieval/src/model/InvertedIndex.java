@@ -5,6 +5,7 @@
  */
 package model;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -580,5 +581,9 @@ public class InvertedIndex {
         // urutkan hasil cari
         Collections.sort(result);
         return result;
+    }
+    
+    public void readDirectory(File directory){
+        
     }
 }
