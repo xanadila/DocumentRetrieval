@@ -223,5 +223,9 @@ public class Document implements Comparable<Document>{
     public void setRealContent(String realContent) {
         this.realContent = realContent;
     }
+
+    public void IndonesiaStemming() {
+        
+    }
     
 }
