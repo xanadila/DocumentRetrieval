@@ -55,6 +55,9 @@ public class Term implements Comparable<Term>{
         return term.compareToIgnoreCase(o.getTerm());
     }
 
-    
+    @Override
+    public String toString() {
+        return "Term{" + "term=" + term + ", postingList=" + postingList + '}';
+    }
     
 }
