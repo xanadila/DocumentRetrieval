@@ -5,7 +5,11 @@
  */
 package model;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,10 +32,26 @@ import org.apache.lucene.util.Version;
  * @author puspaningtyas
  */
 public class Document implements Comparable<Document> {
-
     private int id;
-    private String content; // atribut content yang dianalisis
-    private String realContent; // atribut content asli
+    private String content;
+    private String realContent;
+    private String namaDokumen;
+
+    public String getNamaDokumen() {
+        return namaDokumen;
+    }
+
+    public void setNamaDokumen(String namaDokumen) {
+        this.namaDokumen = namaDokumen;
+    }
+
+    public String getRealContent() {
+        return realContent;
+    }
+
+    public void setRealContent(String realContent) {
+        this.realContent = realContent;
+    }
 
     public Document() {
     }
@@ -51,32 +71,25 @@ public class Document implements Comparable<Document> {
         this.realContent = content;
     }
 
-    /**
-     * @return the content
-     */
-    public String getContent() {
-        return content;
+    @Override
+    public String toString() {
+        return "Document{" + "id=" + id + ", content=" + content + ", realContent=" + realContent + '}';
     }
 
-    /**
-     * @param content the content to set
-     */
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    /**
-     * @return the id
-     */
     public int getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public String[] getListofTerm() {
@@ -86,157 +99,83 @@ public class Document implements Comparable<Document> {
     }
 
     public ArrayList<Posting> getListofPosting() {
-        // panggil fungsi getListOfTerm
-        String tempString[] = getListofTerm();
-        // buat objek ArrayList<Posting> result untuk menampung hasil
+        //panggil fungsi getlistofterm
+        String[] tempString = getListofTerm();
+        //buat object arraylistPosting result untuk menampung hasil
         ArrayList<Posting> result = new ArrayList<Posting>();
-        // buat looping sebanyak listOfTerm
+        //buat looping sebanyak list of term
         for (int i = 0; i < tempString.length; i++) {
-            // di dalam looping
-            // jika term pertama maka
+            //di dalam looping
+            //cek jika term pertama maka
             if (i == 0) {
-                // buat object tempPosting
-                Posting temPosting = new Posting(tempString[0], this);
-                // set atribut document, gunakan this
-                // tambahkan ke ArrayList result
-                result.add(temPosting);
+                //buat object tempPosting
+                Posting tempPosting = new Posting(tempString[i], this);
+                //set atribut documentnya, gunakan this
+                //tambahkan ke Arraylist Result
+                result.add(tempPosting);
             } else {
-                // lainnya
-                // sorting ArayList result
+                //lainnya
+                //sorting ArrayList result
                 Collections.sort(result);
-                // cek apakah term sudah ada
-                // gunakan fungsi search dengan luaran indeks obyek yang memenuhi
-                // buat object tempPosting           
+                //cek apakah tersm sudah ada, maka gunakan fungsi search dengan keluaran indeks objek yang memenuhi
                 Posting temPosting = new Posting(tempString[i], this);
                 int indexCari = Collections.binarySearch(result, temPosting);
-                // jika hasil cari kurang dari 0  (obyek tidak ada)
+                //jika hasil cari kurang dari 0 (objek tidak ada)
                 if (indexCari < 0) {
-                    // set atribut document, gunakan this
-                    // tambahkan ke ArrayList result
-                    result.add(temPosting);
+                    //buat object tempPosting
+                    Posting tempPosting = new Posting(tempString[i], this);
+                    //set atribut documentnya, gunakan this
+                    //tambahkan ke Arraylist Result
+                    result.add(tempPosting);
                 } else {
-                    // lainnya   (obyek ada)
-                    // ambil postingnya, 
-                    // tambahkan atribut numberOfTerm dengan 1
-                    // dgn fungsi get
-                    // int tempNumber = get(indekshasilCari).getNumberOfTerm()+1;
-                    int tempNumber = result.get(indexCari).getNumberOfTerm() + 1;
-                    // atau get(indekshasilcari.setNumberOfTerm(tempNumber)
-                    result.get(indexCari).setNumberOfTerm(tempNumber);
+                    //lainnya (objek ada)
+                    //ambil postingnya, tambahkan 1 ke numberoftermnya 
+                    //dengan fungsi 
+                    int TempNumber = result.get(indexCari).getNumberOfTerm() + 1;
+                    result.get(indexCari).setNumberOfTerm(TempNumber);
                 }
             }
         }
         return result;
     }
 
-    @Override
-    public int compareTo(Document doc) {
-        return id - doc.getId();
+    public int compareTo(Document t) {
+        return id - t.getId();
     }
 
-    /**
-     * Fungsi untuk membaca sebuah file *.txt dan hasil baca dimasukkan ke
-     * atribut content
-     */
     public void readFile(int idDoc, File file) {
-        // simpan idDoc
-        this.id = idDoc;
-        // baca file
-    }
+        this.setId(idDoc);
+        String line = null;
 
-    @Override
-    public String toString() {
-        return "Document{" + "id=" + id + ", content=" + content + ", realContent=" + realContent + '}';
-    }
-
-    /**
-     * Fungsi untuk menghilangkan kata stop word
-     */
-    public void removeStopWords() {
-        // asumsi content sudah ada
-        String text = content;
-        Version matchVersion = Version.LUCENE_7_7_0; // Substitute desired Lucene version for XY
-        Analyzer analyzer = new StandardAnalyzer();
-        analyzer.setVersion(matchVersion);
-        // ambil stopwords
-        CharArraySet stopWords = EnglishAnalyzer.getDefaultStopSet();
-        // buat token
-        TokenStream tokenStream = analyzer.tokenStream(
-                "myField",
-                new StringReader(text.trim()));
-        // buang stop word
-        tokenStream = new StopFilter(tokenStream, stopWords);
-        // buat string baru tanpa stopword
-        StringBuilder sb = new StringBuilder();
-        CharTermAttribute charTermAttribute = tokenStream.addAttribute(CharTermAttribute.class);
         try {
-            tokenStream.reset();
-            while (tokenStream.incrementToken()) {
-                String term = charTermAttribute.toString();
-                sb.append(term + " ");
-            }
-        } catch (Exception ex) {
-            System.out.println("Exception: " + ex);
-        }
-        content = sb.toString();
-    }
+            FileReader fileReader = new FileReader(file);
 
-    /**
-     * Fungsi untuk menghilangkan stop word dan stemming
-     */
-    public void stemming() {
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+            while((line = bufferedReader.readLine()) != null) {
+                this.setContent(line);
+            }   
+
+            bufferedReader.close();         
+        }
+        catch(FileNotFoundException ex) {
+            System.out.println("File not Found.");
+        }
+        catch(IOException ex) {
+            System.out.println(ex.toString());
+        }
+    }
+    
+    public void Stemming(){
         String text = content;
 //        System.out.println("Text = "+text);
         Version matchVersion = Version.LUCENE_7_7_0; // Substitute desired Lucene version for XY
-        Analyzer analyzer = new StandardAnalyzer();
-        analyzer.setVersion(matchVersion);
-        // buat token
-        TokenStream tokenStream = analyzer.tokenStream(
-                "myField",
-                new StringReader(text.trim()));
-        // stemming
-        tokenStream = new PorterStemFilter(tokenStream);
-        // buat string baru tanpa stopword
-        StringBuilder sb = new StringBuilder();
-        CharTermAttribute charTermAttribute = tokenStream.addAttribute(CharTermAttribute.class);
-        try {
-            tokenStream.reset();
-            while (tokenStream.incrementToken()) {
-                String term = charTermAttribute.toString();
-                sb.append(term + " ");
-            }
-        } catch (Exception ex) {
-            System.out.println("Exception: " + ex);
-        }
-        content = sb.toString();
-    }
-
-    /**
-     * @return the realContent
-     */
-    public String getRealContent() {
-        return realContent;
-    }
-
-    /**
-     * @param realContent the realContent to set
-     */
-    public void setRealContent(String realContent) {
-        this.realContent = realContent;
-    }
-
-    public void IndonesiaStemming() {
-        Version matchVersion = Version.LUCENE_7_7_0; // Substitute desired Lucene version for XY
         Analyzer analyzer = new IndonesianAnalyzer();
         analyzer.setVersion(matchVersion);
-        // ambil stopwords
-        CharArraySet stopWords = IndonesianAnalyzer.getDefaultStopSet();
         // buat token
-        TokenStream tokenStream = analyzer.tokenStream(
-                "myField",
-                new StringReader(realContent.trim()));
-        // buang stop word
-        tokenStream = new StopFilter(tokenStream, stopWords);
+        TokenStream tokenStream = analyzer.tokenStream("myField", new StringReader(text.trim()));
+        // stemming
+        tokenStream = new PorterStemFilter(tokenStream);
         // buat string baru tanpa stopword
         StringBuilder sb = new StringBuilder();
         CharTermAttribute charTermAttribute = tokenStream.addAttribute(CharTermAttribute.class);

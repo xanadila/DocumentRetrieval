@@ -18,7 +18,7 @@ public class TestDocumentWithStemmedContent {
         System.out.println("Without Stemming");
         System.out.println(doc);
         System.out.println("With stemming");
-        doc.stemming();
+        doc.Stemming();
         System.out.println(doc);
     }
 }

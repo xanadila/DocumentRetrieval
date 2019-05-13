@@ -5,13 +5,18 @@
  */
 package GUI;
 
+import java.io.File;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.synth.SynthLookAndFeel;
+import model.Document;
+import model.InvertedIndex;
+import model.Posting;
 
 /**
  *
@@ -19,11 +24,20 @@ import javax.swing.plaf.synth.SynthLookAndFeel;
  */
 public class Main_GUI extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Main_GUI
-     */
+    public static InvertedIndex index;
+    
     public Main_GUI() {        
-        initComponents();        
+        initComponents();  
+        index = new InvertedIndex();
+        index.readDirectory(new File("LIRIK"));
+    }
+    
+    public static InvertedIndex getIndex() {
+        return index;
+    }
+
+    public static void setIndex(InvertedIndex index) {
+        index = index;
     }
 
     /**
@@ -55,6 +69,11 @@ public class Main_GUI extends javax.swing.JFrame {
         });
 
         cariButton.setText("CARI");
+        cariButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cariButtonActionPerformed(evt);
+            }
+        });
 
         lirikTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -62,14 +81,109 @@ public class Main_GUI extends javax.swing.JFrame {
                 {null, null},
                 {null, null},
                 {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
                 {null, null}
             },
             new String [] {
-                "Judul Lagu", "Lirik"
+                "ID Document", "Judul Lagu"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false
+                true, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -113,6 +227,30 @@ public class Main_GUI extends javax.swing.JFrame {
     private void lirikTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lirikTextFieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_lirikTextFieldActionPerformed
+
+    private void cariButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cariButtonActionPerformed
+        for (int i = 0; i < lirikTable.getRowCount(); i++) {
+            lirikTable.setValueAt("", i, 0);
+            lirikTable.setValueAt("", i, 1);
+        }
+        index.makeDictionaryWithTermNumber();
+        String query = lirikTextField.getText();
+        Document StemmedQuery = new Document(query);
+        StemmedQuery.Stemming();
+        ArrayList<Posting> queryPostingList = getIndex().getQueryPosting(StemmedQuery.getContent());
+        int x = 0;
+        ArrayList<Document> listDocs = getIndex().getListOfDocument();
+        for (int i = 0; i < listDocs.size(); i++) {
+            ArrayList<Posting> PostingDokumen = getIndex().makeTFIDF(listDocs.get(i).getId());
+            if (getIndex().getCosineSimilarity(queryPostingList, PostingDokumen) > 0) {
+                lirikTable.setValueAt(listDocs.get(i).getId(), x, 0);
+                String judul = listDocs.get(i).getNamaDokumen();
+                String[] j = judul.split(".txt");                
+                lirikTable.setValueAt(j[0], x, 1);
+                x++;
+            }
+        }
+    }//GEN-LAST:event_cariButtonActionPerformed
 
     /**
      * @param args the command line arguments

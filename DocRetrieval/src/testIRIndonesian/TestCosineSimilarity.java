@@ -25,9 +25,9 @@ public class TestCosineSimilarity {
         // buat object invertedIndex
         InvertedIndex index = new InvertedIndex();
         // lakukan stemming untuk semua dokumen
-        doc1.IndonesiaStemming();
-        doc2.IndonesiaStemming();
-        doc3.IndonesiaStemming();
+        doc1.Stemming();
+        doc2.Stemming();
+        doc3.Stemming();
         // tmbahkan document ke index
         index.addNewDocument(doc1);
         index.addNewDocument(doc2);
