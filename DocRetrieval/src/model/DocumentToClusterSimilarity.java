@@ -9,14 +9,16 @@ package model;
  *
  * @author admin
  */
-public class SearchingResult implements Comparable<SearchingResult>{
-    public static final int FAKTOR=1000; // faktor pengali similarity
+public class DocumentToClusterSimilarity implements Comparable<DocumentToClusterSimilarity>{
     private double similarity;
-    private Document document;
+    private Cluster cluster;
 
-    public SearchingResult(double similarity, Document document) {
+    public DocumentToClusterSimilarity() {
+    }
+
+    public DocumentToClusterSimilarity(double similarity, Cluster cluster) {
         this.similarity = similarity;
-        this.document = document;
+        this.cluster = cluster;
     }
 
     /**
@@ -34,22 +36,22 @@ public class SearchingResult implements Comparable<SearchingResult>{
     }
 
     /**
-     * @return the document
+     * @return the cluster
      */
-    public Document getDocument() {
-        return document;
+    public Cluster getCluster() {
+        return cluster;
     }
 
     /**
-     * @param document the document to set
+     * @param cluster the cluster to set
      */
-    public void setDocument(Document document) {
-        this.document = document;
+    public void setCluster(Cluster cluster) {
+        this.cluster = cluster;
     }
 
     @Override
-    public int compareTo(SearchingResult result) {
-        return Double.compare(result.getSimilarity(),similarity); 
+    public int compareTo(DocumentToClusterSimilarity o) {
+        return Double.compare(similarity, o.getSimilarity());
     }
     
 }

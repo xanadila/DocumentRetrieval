@@ -59,5 +59,6 @@ public class Term implements Comparable<Term>{
     public String toString() {
         return "Term{" + "term=" + term + ", postingList=" + postingList + '}';
     }
+
     
 }

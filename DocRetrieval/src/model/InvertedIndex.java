@@ -22,6 +22,8 @@ public class InvertedIndex {
 
     private ArrayList<Document> listOfDocument = new ArrayList<Document>();
     private ArrayList<Term> dictionary = new ArrayList<Term>();
+    private ArrayList<Cluster> listOfCluster = new ArrayList<Cluster>();
+    public static final int NUMBER_OF_DOCUMENT_CLUSTER = 2;
 
     public InvertedIndex() {
     }
@@ -582,8 +584,14 @@ public class InvertedIndex {
         Collections.sort(result);
         return result;
     }
-    
-    public void readDirectory(File directory){
+
+    /**
+     * Fungsi untuk membuat list dokumen dari sebuah directory asumsikan isi
+     * file cukup disimpan dalam sebuah obyek String
+     *
+     * @param directory
+     */
+    public void readDirectory(File directory) {
         File files[] = directory.listFiles();
         for (int i = 0; i < files.length; i++) {
             // buat document baru
@@ -595,11 +603,75 @@ public class InvertedIndex {
             File file = files[i];
             doc.readFile(i + 1, file);
             doc.Stemming();
+            //doc.IndonesiaStemming();
             doc.setNamaDokumen(file.getName());
-            // masukkan file isi directory ke list of document pada obyek index
+            // masukkan file isi directory ke list of document pada obye index
             this.addNewDocument(doc);
         }
-        // lakukan indexing atau buat dictionary
-        this.makeDictionaryWithTermNumber();
+    }
+
+    /**
+     * @return the cluster
+     */
+    public ArrayList<Cluster> getListOfCluster() {
+        return listOfCluster;
+    }
+
+    /**
+     * @param cluster the cluster to set
+     */
+    public void setListOfCluster(ArrayList<Cluster> cluster) {
+        this.listOfCluster = cluster;
+    }
+
+    /**
+     * Fungsi penyiapan pasting dari seluruh document Asumsi document sudah di
+     * stemming
+     */
+    public void preClustering() {
+        // baca seluruh document
+        for (int i = 0; i < listOfDocument.size(); i++) {
+            // baca idDoc
+            int idDoc = listOfDocument.get(i).getId();
+            // buat posting dengan nilai TF-IDFnya
+            listOfDocument.get(i).setListOfClusteringPosting(makeTFIDF(idDoc));
+
+        }
+    }
+
+    /**
+     * Fungsi untuk clustering
+     */
+    public void clustering() {
+        // buat arraylistofCluster sejumlah kelompok yang sudah ditentukan
+        // dan tetapkan N document awal sebagai pusat cluster
+        for (int i = 0; i < NUMBER_OF_DOCUMENT_CLUSTER; i++) {
+            Cluster cluster = new Cluster(i);
+            cluster.setCenter(listOfDocument.get(i));
+            listOfCluster.add(cluster);
+        }
+
+        // lalu lakukan penghitungan similarity antara dokumen 
+        // dengan masing-masing center
+        for (int i = 0; i < listOfDocument.size(); i++) {
+            // per epoch
+            Document doc = listOfDocument.get(i);
+            // hitung similarity
+            ArrayList<DocumentToClusterSimilarity> listOfSimilarity
+                    = new ArrayList<DocumentToClusterSimilarity>();
+            for (int j = 0; j < listOfCluster.size(); j++) {
+                double sim = getCosineSimilarity(listOfDocument.get(i).getListOfClusteringPosting(),
+                        listOfCluster.get(j).getCenter().getListOfClusteringPosting());
+                DocumentToClusterSimilarity simDoc
+                        = new DocumentToClusterSimilarity(sim, listOfCluster.get(j));
+                listOfSimilarity.add(simDoc);
+            }
+            // sorting similarity
+            Collections.sort(listOfSimilarity);
+            // asumsi sorting descending , similarity terurut dari besar ke kecil
+            // tetapkan document ke cluster dengan similarity terbesar
+            // anda juga bisa tetapkan dengan KNN
+            listOfSimilarity.get(0).getCluster().getMember().add(doc);
+        }
     }
 }

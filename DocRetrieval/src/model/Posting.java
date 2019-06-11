@@ -5,8 +5,6 @@
  */
 package model;
 
-import java.util.ArrayList;
-
 /**
  *
  * @author admin
@@ -108,4 +106,5 @@ public class Posting implements Comparable<Posting> {
     public String toString() {
         return "Posting{" + "term=" + term + ", numberOfTerm=" + numberOfTerm + ", weight=" + weight + '}';
     }
+    
 }
