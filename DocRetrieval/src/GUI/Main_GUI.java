@@ -31,7 +31,7 @@ public class Main_GUI extends javax.swing.JFrame {
     public Main_GUI() {        
         initComponents();  
         index = new InvertedIndex();
-        index.readDirectory(new File("LIRIK"));
+        index.readDirectory(new File("LIRIK_UAS"));
     }
     
     public static InvertedIndex getIndex() {
